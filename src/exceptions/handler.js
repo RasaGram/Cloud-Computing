@@ -16,19 +16,15 @@ let pool;
     pool = await createUnixSocketPool();
 })();
 
-
-const insertStudent = async (request, h) => {
-
-    const { name, univ, semester } = request.payload;
-
+// Insert food function
+const insertFood = async (request, h) => {
+    const { dish_name, ingredients, description} = request.payload;
     try {
-
-        const query = 'INSERT INTO student(name, univ, semester) VALUES(?, ?, ?)';
-        const queryResult = await pool.query(query, [name, univ, semester]);
-
+        const query = 'INSERT INTO food_data(dish_name, ingredients, description) VALUES (?, ?, ?)';
+        const queryResult = await pool.query(query, [dish_name, ingredients, description]);
         const response = h.response({
             status: 'success',
-            message: 'Data berhasil diinput'
+            message: 'Data makanan berhasil diinput'
         });
         response.code(200);
         return response;
@@ -42,13 +38,55 @@ const insertStudent = async (request, h) => {
     }
 }
 
-const getStudent = async (request, h) => {
-
+// Get foods function
+const getFoods = async (request, h) => {
     try {
-
-        const query = 'SELECT * FROM student';
+        const query = 'SELECT * FROM food_data';
         const queryResult = await pool.query(query);
+        const response = h.response({
+            status: 'success',
+            result: queryResult
+        });
+        response.code(200);
+        return response;
+    } catch (error) {
+        const response = h.response({
+            status: 'fail',
+            result: error.message,
+        });
+        response.code(400);
+        return response;
+    }
+}
 
+// Get cooking instructions function
+const getCookingInstructions = async (request, h) => {
+    const { id } = request.params;
+    try {
+        const query = 'SELECT description FROM food_data WHERE id = ?';
+        const queryResult = await pool.query(query, [id]);
+        const response = h.response({
+            status: 'success',
+            result: queryResult
+        });
+        response.code(200);
+        return response;
+    } catch (error) {
+        const response = h.response({
+            status: 'fail',
+            result: error.message,
+        });
+        response.code(400);
+        return response;
+    }
+}
+
+// Get Indonesian food names function
+const getIndonesianFoodNames = async (request, h) => {
+    const { id } = request.params;
+    try {
+        const query = 'SELECT dish_name FROM food_data WHERE id = ?';
+        const queryResult = await pool.query(query, [id]);
         const response = h.response({
             status: 'success',
             result: queryResult
@@ -66,11 +104,44 @@ const getStudent = async (request, h) => {
 }
 
 
-const convertBinary = async (request, h) => {
+// Get detected food ingredients function
+const getDetectedFoodIngredients = async (request, h) => {
+    const { id } = request.params;
+    try {
+        const query = 'SELECT ingredients FROM food_data WHERE id = ?';
+        const queryResult = await pool.query(query, [id]);
+        const response = h.response({
+            status: 'success',
+            result: queryResult
+        });
+        response.code(200);
+        return response;
+    } catch (error) {
+        const response = h.response({
+            status: 'fail',
+            result: error.message,
+        });
+        response.code(400);
+        return response;
+    }
+}
 
+// Scan food from camera function
+const scanFoodFromCamera = async (request, h) => {
+    // Implementasi untuk memindai makanan dari kamera
+    // Misalnya menggunakan layanan pihak ketiga untuk pemrosesan gambar
+    const response = h.response({
+        status: 'success',
+        message: 'Fitur pemindaian makanan belum diimplementasikan'
+    });
+    response.code(200);
+    return response;
+}
+
+// Existing functions
+const convertBinary = async (request, h) => {
     const { data } = request.payload;
     let resultBinary = '';
-
     if (typeof data !== 'number' || !Number.isInteger(data)) {
         const response = h.response({
             status: 'fail',
@@ -79,19 +150,15 @@ const convertBinary = async (request, h) => {
         response.code(400);
         return response;
     }
-
     if (data === 0) {
         resultBinary = '0';
-    }
-
-    else {
+    } else {
         let num = data;
         while(num > 0) {
             resultBinary = (num % 2) + resultBinary;
             num = Math.floor(num / 2);
         }
     }
-
     const response = h.response({
         status: 'success',
         result: resultBinary,
@@ -101,20 +168,15 @@ const convertBinary = async (request, h) => {
 }
 
 const fibonacci = async (request, h) => {
-
     const { n } = request.payload;
-
     let num = n;
     let num1 = 0, num2 = 1;
-
     function add_fibonacci (i) {
         if (i == 1) {
             return 0;
-        }
-        else if (i == 2) {
+        } else if (i == 2) {
             return 1;
-        }
-        else {
+        } else {
             while(i != 2){
                 total = num1 + num2;
                 num1 = num2;
@@ -124,9 +186,7 @@ const fibonacci = async (request, h) => {
             return total;
         }
     }
-
     resultFibo = add_fibonacci(num);
-
     const response = h.response({
         status: 'success',
         result: resultFibo,
@@ -138,6 +198,10 @@ const fibonacci = async (request, h) => {
 module.exports = {
     convertBinary,
     fibonacci,
-    insertStudent,
-    getStudent,
+    insertFood,
+    getFoods,
+    getCookingInstructions,
+    getIndonesianFoodNames,
+    getDetectedFoodIngredients,
+    scanFoodFromCamera,
 }
