@@ -8,3 +8,7 @@
 ## Deployment Link
 - https://cloud-computing-sql2-fojpdgrpva-et.a.run.app > DATA API
 - https://storage.googleapis.com/bucket-model-rasagram/Machine-Learning-main/best_model.tflite > MODEL
+
+
+Documentation for the routes provided in the application hosted at https://cloud-computing-sql2-fojpdgrpva-et.a.run.app/.
+
